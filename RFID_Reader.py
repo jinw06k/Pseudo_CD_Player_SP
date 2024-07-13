@@ -1,19 +1,32 @@
-from adafruit_pn532.i2c import PN532_I2C
+# from adafruit_pn532.i2c import PN532_I2C
+
+# https://github.com/adafruit/Adafruit_Python_PN532/tree/master
+import Adafruit_PN532 as PN532
 import json
 import board
 import busio
 from digitalio import DigitalInOut
 
-# I2C connection:
-i2c = busio.I2C(board.SCL, board.SDA)
+# # I2C connection:
+# i2c = busio.I2C(board.SCL, board.SDA)
 
-# harware reset
-reset_pin = DigitalInOut(board.D6)
-# On Raspberry Pi, you must also connect a pin to P32 "H_Request" for hardware
-req_pin = DigitalInOut(board.D12)
-pn532 = PN532_I2C(i2c, debug=False, reset=reset_pin, req=req_pin)
+# # harware reset
+# reset_pin = DigitalInOut(board.D6)
+# # On Raspberry Pi, you must also connect a pin to P32 "H_Request" for hardware
+# req_pin = DigitalInOut(board.D12)
+# pn532 = PN532_I2C(i2c, debug=False, reset=reset_pin, req=req_pin)
 
+# pn532.SAM_configuration()
+
+SSEL = 18 # Blue
+MOSI = 17 # Orange
+MISO = 27 # Green
+SCLK = 22 # Yellow
+
+pn532 = PN532.PN532(cs=SSEL, sclk=SCLK, mosi=MOSI, miso=MISO)
+pn532.begin()
 pn532.SAM_configuration()
+
 
 def read_album_json():
     id = pn532.read_passive_target(timeout=0.5)
