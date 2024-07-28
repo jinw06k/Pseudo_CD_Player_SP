@@ -16,7 +16,6 @@ while True:
                                                        redirect_uri="http://localhost:8080/callback",
                                                        scope="user-read-currently-playing,user-read-playback-state,user-modify-playback-state"))
         
-        # new scan?
         while True:
             current_playing = spfy.current_user_playing_track()
 
@@ -31,6 +30,8 @@ while True:
                 if current_playing is not None:
                     if (current_playing['item']['album']['uri'] == album_json['uri']):
                         continue
+                    spfy.start_playback(device_id=DEVICE_ID, context_uri=album_json['uri'])
+                    sleep(2)
                 else:
                     spfy.start_playback(device_id=DEVICE_ID, context_uri=album_json['uri'])
                     sleep(2)
