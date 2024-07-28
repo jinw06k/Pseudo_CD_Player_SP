@@ -1,45 +1,27 @@
 #!/usr/bin/env python
-import RPi.GPIO as GPIO
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-from time import sleep
-from RFID_Reader import *
+import requests
+from Refresh import Refresh
+import json
+
+SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
+SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
+SPOTIFY_API_BASE_URL = "https://api.spotify.com"
+API_VERSION = "v1"
+SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
 
 DEVICE_ID=""
-CLIENT_ID=""
-CLIENT_SECRET=""
 
-while True:
-    try:
-        spfy = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
-                                                       client_secret=CLIENT_SECRET,
-                                                       redirect_uri="http://localhost:8080/callback",
-                                                       scope="user-read-currently-playing,user-read-playback-state,user-modify-playback-state"))
-        
-        while True:
-            current_playing = spfy.current_user_playing_track()
+def play(album):
+    authorization_header = getAuthorizationHeader()
+    play_endpoint = "{}/me/player/play?device_id={}}".format(SPOTIFY_API_URL, DEVICE_ID)
 
-            print("Waiting for new scan...")
-            album_json = read_album_json()
-            print("Album name is:", album_json['name'])
-            
-            if (id==-1):
-                sleep(3)
-            
-            else:
-                if current_playing is not None:
-                    if (current_playing['item']['album']['uri'] == album_json['uri']):
-                        continue
-                    spfy.start_playback(device_id=DEVICE_ID, context_uri=album_json['uri'])
-                    sleep(2)
-                else:
-                    spfy.start_playback(device_id=DEVICE_ID, context_uri=album_json['uri'])
-                    sleep(2)
+    # before requesting, get current playing info and compare to the album. 
+    # If the album is already playing, don't send the request
+    play_request = requests.put(play_endpoint, headers=authorization_header, data=json.dumps(album['spotify_body']))
+
+    return play_request.status_code
                 
-    except Exception as e:
-        print(e)
-        pass
-
-    finally:
-        print("Cleaning  up...")
-        GPIO.cleanup()
+def getAuthorizationHeader():
+    refreshCaller = Refresh()
+    authorization_header = {"Authorization": "Bearer {}".format(refreshCaller.refresh())}
+    return authorization_header

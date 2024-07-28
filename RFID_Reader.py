@@ -7,16 +7,8 @@ import board
 import busio
 from digitalio import DigitalInOut
 
-# # I2C connection:
-# i2c = busio.I2C(board.SCL, board.SDA)
-
-# # harware reset
-# reset_pin = DigitalInOut(board.D6)
-# # On Raspberry Pi, you must also connect a pin to P32 "H_Request" for hardware
-# req_pin = DigitalInOut(board.D12)
-# pn532 = PN532_I2C(i2c, debug=False, reset=reset_pin, req=req_pin)
-
-# pn532.SAM_configuration()
+import RPi.GPIO as GPIO
+from Spotifyer import *
 
 SSEL = 18 # Blue
 MOSI = 17 # Orange
@@ -45,3 +37,19 @@ def get_id_json_mapping(rfid_id):
         album_json = 0
 
     return album_json
+
+def main():
+    try:
+        while True:
+            alb = read_album_json()
+            play(alb)
+
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+        raise
+    except Exception:
+        GPIO.cleanup()
+        raise
+
+if __name__ == "__main__":
+    main()
