@@ -51,5 +51,8 @@ def main():
         GPIO.cleanup()
         raise
 
+def authenticate():
+    pass
+
 if __name__ == "__main__":
     main()
