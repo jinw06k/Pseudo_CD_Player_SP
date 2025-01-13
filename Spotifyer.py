@@ -1,27 +1,36 @@
-#!/usr/bin/env python
 import requests
-from Refresh import Refresh
 import json
+import spotipy
+from spotipy.oauth2 import SpotifyOAuth
+from dotenv import load_dotenv
+import os
 
-SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
-SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
-SPOTIFY_API_BASE_URL = "https://api.spotify.com"
-API_VERSION = "v1"
-SPOTIFY_API_URL = "{}/{}".format(SPOTIFY_API_BASE_URL, API_VERSION)
+load_dotenv()
+DEVI_ID = os.getenv("DEVI_ID")
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
-DEVICE_ID=""
+def play(album_id):
+    spfy = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id=CLIENT_ID,
+                                                client_secret=CLIENT_SECRET,
+                                                redirect_uri="http://localhost:8080/callback",
+                                                scope="user-read-currently-playing,user-read-playback-state,user-modify-playback-state"))
+    
+    with open('albums.json', 'r') as file:
+        mapping = json.load(file)
 
-def play(album):
-    authorization_header = getAuthorizationHeader()
-    play_endpoint = "{}/me/player/play?device_id={}}".format(SPOTIFY_API_URL, DEVICE_ID)
+    try:
+        album_info = mapping[album_id]
+    except KeyError:
+        return
+    
+    current_playing = spfy.current_playback()['item']['album']['uri']
+    requested_album = album_info['request_body']['context_uri']
 
-    # before requesting, get current playing info and compare to the album. 
-    # If the album is already playing, don't send the request
-    play_request = requests.put(play_endpoint, headers=authorization_header, data=json.dumps(album['spotify_body']))
-
-    return play_request.status_code
-                
-def getAuthorizationHeader():
-    refreshCaller = Refresh()
-    authorization_header = {"Authorization": "Bearer {}".format(refreshCaller.refresh())}
-    return authorization_header
+    if current_playing == requested_album:
+        print("Already playing requested album")
+    else:
+        print("Playing "+album_info['name'])
+        spfy.start_playback(device_id=DEVI_ID, context_uri=album_info['request_body']['context_uri'], offset={"position":0})
+    
+    return spfy.current_playback()

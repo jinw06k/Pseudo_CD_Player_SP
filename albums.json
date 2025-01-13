@@ -1,7 +1,7 @@
 {
     "1047477723963": {
         "name": "Ichi [2022] - Yuuri",
-        "spotify_body": {
+        "request_body": {
             "context_uri": "spotify:album:1YWoHzj5wHnG7m6gLlwBQd",
             "offset": {
                 "position": 0
@@ -11,7 +11,7 @@
     },
     "1054179831081": {
         "name": "Memories [2021] - Tani Yuuki",
-        "spotify_body": {
+        "request_body": {
             "context_uri": "spotify:album:1aYWdnbKO3asqDUruOl2cY",
             "offset": {
                 "position": 0
@@ -21,7 +21,7 @@
     },
     "24354204829": {
         "name": "Editorial [2021] - OFFICIAL HIGE DANDISM",
-        "spotify_body": {
+        "request_body": {
             "context_uri": "spotify:album:22nXr9DqkTAp1Y0GT1ialu",
             "offset": {
                 "position": 0
@@ -31,7 +31,7 @@
     },
     "780318911510": {
         "name": "Traveler [2019] - OFFICIAL HIGE DANDISM",
-        "spotify_body": {
+        "request_body": {
             "context_uri": "spotify:album:27xCJZ11HdYHgwqTo8ldWE",
             "offset": {
                 "position": 0
